@@ -60,21 +60,21 @@ The platform provides 3 tailored enforcement modalities:
 Below is a visual walkthrough of the MetroScan AI platform interface:
 
 ### 1. 🌐 Landing Page & Real-Time AI Inspection Stream
-![Landing Page](file:///C:/Users/Rushikesh/.gemini/antigravity/brain/0a4d83ed-d05f-4374-bceb-23a0f9446501/landing_page_1788463290658.png)
+![Landing Page](./docs/screenshots/landing_page.png)
 * **Hero Overview**: Highlights key operational metrics ($10,000+$ products/day capacity, $94.5\%$ OCR accuracy, $<60\text{s}$ check speed).
 * **Live Inspection Stream**: Features a real-time computer vision laser scanner simulation demonstrating continuous OCR pre-processing and sequential Rule 6 declaration validation.
 
 ---
 
 ### 2. 🔍 Multi-Modal Scanner Input Interface
-![Scanner Interface](file:///C:/Users/Rushikesh/.gemini/antigravity/brain/0a4d83ed-d05f-4374-bceb-23a0f9446501/scanner_page_1788463307299.png)
+![Scanner Interface](./docs/screenshots/scanner_page.png)
 * **Modality Switcher**: Toggle seamlessly between **Physical Scan**, **E-Commerce URL**, and **Manufacturer Upload**.
 * **Scan Configuration**: Select rule sets (LM Rules 2011 + 2017 Amendment), toggle multi-language label parsing, enable OpenAI semantic validation, or override specific automated checks.
 
 ---
 
 ### 3. 📊 District Enforcement Dashboard
-![Enforcement Dashboard](file:///C:/Users/Rushikesh/.gemini/antigravity/brain/0a4d83ed-d05f-4374-bceb-23a0f9446501/dashboard_page_1788463320902.png)
+![Enforcement Dashboard](./docs/screenshots/dashboard_page.png)
 * **Officer Context**: Tracks District Inspector profile (e.g., Inspector Rajesh Kumar - Badge #MH-LM-4029).
 * **KPI Metrics**: Displays total products audited ($1,247$), legal violations flagged ($342$), compliance rate ($73\%$), and pending officer escalations ($18$).
 * **Analytics Charts**: Interactive breakdown of Rule 6 Violation Frequency (MRP, Net Qty, Address, Font Size), Inspection Modality Breakdown, and 30-Day Enforcement Trends.
@@ -82,7 +82,7 @@ Below is a visual walkthrough of the MetroScan AI platform interface:
 ---
 
 ### 4. 📄 Detailed Audit & Rule 6 Compliance Certificate
-![Audit Results](file:///C:/Users/Rushikesh/.gemini/antigravity/brain/0a4d83ed-d05f-4374-bceb-23a0f9446501/audit_results_page_1788463337735.png)
+![Audit Results](./docs/screenshots/audit_results_page.png)
 * **High-Res Label Inspector**: Interactive bounding boxes mapped directly over the product package (Green = Compliant, Yellow = Warning, Red = Violation).
 * **Barcode Scale Ratio**: Real-time display of spatial calibration ratio ($0.0830\text{ mm/px}$ with $97.2\%$ GS1 match).
 * **Rule 6 Field Audit**: Itemized checklist for Generic Name, Net Qty, MRP, Address, Expiry, Country of Origin, and Customer Care.
@@ -91,7 +91,7 @@ Below is a visual walkthrough of the MetroScan AI platform interface:
 ---
 
 ### 5. 🏢 Manufacturer Pre-Print Verification Portal
-![Manufacturer Portal](file:///C:/Users/Rushikesh/.gemini/antigravity/brain/0a4d83ed-d05f-4374-bceb-23a0f9446501/manufacturer_page_1788463352535.png)
+![Manufacturer Portal](./docs/screenshots/manufacturer_page.png)
 * **Pre-Production Submission**: Allows manufacturers to register GSTIN, Manufacturer Name, Commodity, Net Qty, and FSSAI License before printing label artwork.
 * **Instant Digital Clearance**: Issues a digital pre-print clearance certificate to prevent packaging waste and ensure statutory compliance at source.
 
