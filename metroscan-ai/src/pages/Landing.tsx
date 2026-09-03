@@ -1,16 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { gsap } from 'gsap';
 import { Camera, Globe, FileCheck, ArrowRight, ShieldCheck, Zap, TrendingUp, Clock, CheckCircle2 } from 'lucide-react';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 
 const STATUS_ROWS = [
-  { text: '✓ Preprocessing complete', color: 'var(--india-green)', delay: 0.5 },
-  { text: '✓ Barcode detected — 4.2 mm/px', color: 'var(--india-green)', delay: 1.2 },
-  { text: '✓ 12 mandatory fields extracted', color: 'var(--india-green)', delay: 1.9 },
-  { text: '⚠ Font size: 2.1mm (Rule 6 req: 3mm)', color: 'var(--amber)', delay: 2.6 },
-  { text: '◉ Processing semantic validation...', color: 'var(--text-muted)', delay: 3.2, dots: true },
+  { text: '✓ Preprocessing complete', color: 'var(--india-green)' },
+  { text: '✓ Barcode detected — 4.2 mm/px', color: 'var(--india-green)' },
+  { text: '✓ 12 mandatory fields extracted', color: 'var(--india-green)' },
+  { text: '⚠ Font size: 2.1mm (Rule 6 req: 3mm)', color: 'var(--amber)' },
+  { text: '◉ Processing semantic validation...', color: 'var(--text-muted)', dots: true },
 ];
 
 const TRACK_CARDS = [
@@ -49,23 +48,19 @@ const STATS = [
 
 export default function Landing() {
   const navigate = useNavigate();
-  const heroRef = useRef<HTMLDivElement>(null);
-  const leftRef = useRef<HTMLDivElement>(null);
-  const rightRef = useRef<HTMLDivElement>(null);
+  const [visibleRowsCount, setVisibleRowsCount] = useState<number>(0);
 
+  // Sequential status rows animation on page load/reload
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-      tl.fromTo('.hero-eyebrow', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 })
-        .fromTo('.hero-headline', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8 }, '-=0.3')
-        .fromTo('.hero-sub', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, '-=0.4')
-        .fromTo('.hero-stats', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.3')
-        .fromTo('.hero-ctas', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4 }, '-=0.2')
-        .fromTo('.hero-card', { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.9 }, '-=0.6')
-        .fromTo('.track-card', { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.15 }, '-=0.3');
-    });
-    return () => ctx.revert();
+    setVisibleRowsCount(0);
+    const timers = [
+      setTimeout(() => setVisibleRowsCount(1), 400),
+      setTimeout(() => setVisibleRowsCount(2), 1000),
+      setTimeout(() => setVisibleRowsCount(3), 1600),
+      setTimeout(() => setVisibleRowsCount(4), 2200),
+      setTimeout(() => setVisibleRowsCount(5), 2800),
+    ];
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   return (
@@ -73,7 +68,6 @@ export default function Landing() {
       {/* ── HERO ── */}
       <div className="max-w-content">
         <div
-          ref={heroRef}
           style={{
             display: 'grid',
             gridTemplateColumns: 'minmax(0,1.1fr) minmax(0,0.9fr)',
@@ -85,9 +79,9 @@ export default function Landing() {
           className="hero-grid"
         >
           {/* LEFT */}
-          <div ref={leftRef}>
+          <div>
             {/* Eyebrow */}
-            <div className="hero-eyebrow" style={{ opacity: 0, marginBottom: 24 }}>
+            <div style={{ marginBottom: 24 }}>
               <div style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 border: '1px solid rgba(234, 88, 12, 0.3)',
@@ -100,7 +94,7 @@ export default function Landing() {
                   animate={{ opacity: [1, 0.3, 1] }}
                   transition={{ duration: 1.4, repeat: Infinity }}
                 />
-                <span style={{ fontSize: '0.8125rem', color: 'var(--saffron)', fontWeight: 700, fontFamily: 'Space Grotesk' }}>
+                <span style={{ fontSize: '0.8125rem', color: 'var(--saffron)', fontWeight: 700, fontFamily: 'Outfit' }}>
                   Smart India Hackathon 2026 · Problem Statement #26034
                 </span>
               </div>
@@ -108,11 +102,8 @@ export default function Landing() {
 
             {/* Headline */}
             <h1
-              className="hero-headline text-display"
-              style={{
-                opacity: 0,
-                color: 'var(--navy-dark)', marginBottom: 20,
-              }}
+              className="text-display"
+              style={{ color: 'var(--navy-dark)', marginBottom: 20 }}
             >
               AI-Powered Label<br />
               <span style={{ color: 'var(--saffron)' }}>Compliance</span> at<br />
@@ -121,9 +112,7 @@ export default function Landing() {
 
             {/* Sub */}
             <p
-              className="hero-sub"
               style={{
-                opacity: 0,
                 fontSize: '1.0625rem', color: 'var(--text-secondary)',
                 maxWidth: 500, lineHeight: 1.7, marginBottom: 36,
               }}
@@ -135,9 +124,7 @@ export default function Landing() {
 
             {/* Stats strip */}
             <div
-              className="hero-stats"
               style={{
-                opacity: 0,
                 display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
                 borderRadius: 16, overflow: 'hidden',
                 border: '1px solid var(--border)',
@@ -157,7 +144,7 @@ export default function Landing() {
                     }}
                   >
                     <div style={{
-                      fontFamily: 'JetBrains Mono', fontSize: '1.25rem', fontWeight: 700,
+                      fontFamily: 'Outfit', fontSize: '1.25rem', fontWeight: 800,
                       color: 'var(--saffron)', lineHeight: 1, marginBottom: 4,
                     }}>
                       {s.prefix || ''}
@@ -173,7 +160,7 @@ export default function Landing() {
             </div>
 
             {/* CTAs */}
-            <div className="hero-ctas" style={{ opacity: 0, display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
               <motion.button
                 className="btn-primary"
                 style={{ fontSize: '1rem', padding: '14px 28px' }}
@@ -200,11 +187,9 @@ export default function Landing() {
           </div>
 
           {/* RIGHT — Scan mockup card */}
-          <div ref={rightRef}>
+          <div>
             <div
-              className="hero-card"
               style={{
-                opacity: 0,
                 background: '#FFFFFF',
                 border: '1px solid var(--border)',
                 borderRadius: 20, overflow: 'hidden',
@@ -238,33 +223,25 @@ export default function Landing() {
                 </div>
               </div>
 
-              {/* Product image */}
+              {/* Product image with continuous, infinite up-and-down laser scan beam */}
               <div style={{ position: 'relative', overflow: 'hidden', background: '#F1F5F9' }}>
                 <img
                   src="https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=600&h=240&fit=crop&auto=format"
                   alt="Product label scan"
                   style={{ width: '100%', height: 210, objectFit: 'cover', display: 'block' }}
                 />
-                {/* Scan beam */}
-                <motion.div
-                  style={{
-                    position: 'absolute', left: 0, width: '100%', height: 3,
-                    background: 'linear-gradient(90deg, transparent, #EA580C, #F97316, transparent)',
-                    boxShadow: '0 0 16px rgba(234, 88, 12, 0.8)',
-                  }}
-                  animate={{ top: ['0%', '100%'] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
-                />
+                {/* Continuous Infinite Pure CSS Laser Scan Beam */}
+                <div className="scan-beam" />
               </div>
 
-              {/* Status rows */}
-              <div style={{ padding: '16px 20px', background: '#FFFFFF' }}>
-                {STATUS_ROWS.map((row, i) => (
+              {/* Sequential status rows */}
+              <div style={{ padding: '16px 20px', background: '#FFFFFF', minHeight: 180 }}>
+                {STATUS_ROWS.slice(0, visibleRowsCount).map((row, i) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: row.delay, duration: 0.35 }}
+                    transition={{ duration: 0.3 }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8,
                       padding: '7px 0',
@@ -273,14 +250,14 @@ export default function Landing() {
                   >
                     {row.dots ? (
                       <motion.span
-                        style={{ fontFamily: 'JetBrains Mono', fontSize: '0.78rem', color: row.color, fontWeight: 500 }}
+                        style={{ fontSize: '0.78rem', color: row.color, fontWeight: 600 }}
                         animate={{ opacity: [0.5, 1, 0.5] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                       >
                         {row.text}
                       </motion.span>
                     ) : (
-                      <span style={{ fontFamily: 'JetBrains Mono', fontSize: '0.78rem', color: row.color, fontWeight: 600 }}>
+                      <span style={{ fontSize: '0.78rem', color: row.color, fontWeight: 600 }}>
                         {row.text}
                       </span>
                     )}
@@ -293,6 +270,15 @@ export default function Landing() {
 
         {/* ── TRACK CARDS ── */}
         <div style={{ paddingBottom: 80 }}>
+          <div style={{ marginBottom: 24, textAlign: 'left' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--saffron)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'Outfit' }}>
+              Enforcement Modalities
+            </span>
+            <h2 className="text-h2" style={{ color: 'var(--navy-dark)', marginTop: 4 }}>
+              Three Automated Compliance Tracks
+            </h2>
+          </div>
+
           <div
             style={{
               display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24,
@@ -302,10 +288,12 @@ export default function Landing() {
             {TRACK_CARDS.map((card, i) => {
               const Icon = card.icon;
               return (
-                <div
+                <motion.div
                   key={i}
-                  className="track-card glass-card-hover"
-                  style={{ padding: 32, cursor: 'pointer', opacity: 0 }}
+                  className="glass-card-hover"
+                  whileHover={{ y: -4 }}
+                  transition={{ duration: 0.2 }}
+                  style={{ padding: 32, cursor: 'pointer' }}
                   onClick={() => navigate('/scan')}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
@@ -326,13 +314,13 @@ export default function Landing() {
                       {card.badge}
                     </span>
                   </div>
-                  <h3 style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: '1.15rem', marginBottom: 12, color: 'var(--navy-dark)' }}>
+                  <h3 style={{ fontFamily: 'Outfit', fontWeight: 700, fontSize: '1.15rem', marginBottom: 12, color: 'var(--navy-dark)' }}>
                     {card.title}
                   </h3>
                   <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>
                     {card.desc}
                   </p>
-                </div>
+                </motion.div>
               );
             })}
           </div>

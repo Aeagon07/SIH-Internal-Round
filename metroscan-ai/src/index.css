@@ -403,12 +403,26 @@ select.input-base:hover {
   border-color: var(--saffron);
 }
 
+@keyframes continuousLaserScan {
+  0% {
+    top: 0%;
+  }
+  50% {
+    top: 96%;
+  }
+  100% {
+    top: 0%;
+  }
+}
+
 .scan-beam {
   position: absolute;
   left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, transparent, #EA580C, #F97316, transparent);
-  box-shadow: 0 0 16px #EA580C;
+  background: linear-gradient(90deg, transparent, #EA580C, #F97316, #EA580C, transparent);
+  box-shadow: 0 0 16px 2px rgba(234, 88, 12, 0.9);
   z-index: 10;
+  pointer-events: none;
+  animation: continuousLaserScan 2.8s linear infinite;
 }
 
 .certificate-card {
