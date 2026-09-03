@@ -1,0 +1,921 @@
+Build a full-stack demo web application called "MetroScan AI" for Smart 
+India Hackathon 2026. This is an AI-powered compliance verification system 
+for packaged commodities under Legal Metrology (PC) Rules, 2011 — 
+Problem Statement #26034, Team Takshak.
+
+═══════════════════════════════════════════════════════════════
+DESIGN SYSTEM (follow this exactly — no deviation)
+═══════════════════════════════════════════════════════════════
+
+Color Palette:
+  --bg-base:       #070B14   (page background)
+  --bg-surface:    #0E1525   (cards, panels)
+  --bg-elevated:   #162035   (modals, overlays)
+  --saffron:       #F97316   (primary accent — India flag, CTAs, active states)
+  --saffron-dim:   #7C3A0F   (saffron at 30% for backgrounds)
+  --india-green:   #16A34A   (compliant/success states)
+  --green-dim:     #14532D
+  --crimson:       #DC2626   (violations/critical)
+  --crimson-dim:   #7F1D1D
+  --amber:         #D97706   (warnings/major)
+  --amber-dim:     #78350F
+  --text-primary:  #F1F5F9
+  --text-secondary:#94A3B8
+  --border:        rgba(255,255,255,0.08)
+  --glow-saffron:  0 0 24px rgba(249,115,22,0.3)
+  --glow-green:    0 0 24px rgba(22,163,74,0.3)
+
+Typography:
+  Headings: "Space Grotesk" (weights 500, 600, 700) — import from Google Fonts
+  Body/UI:  "DM Sans" (weights 400, 500) — import from Google Fonts
+  Mono/Data:"JetBrains Mono" — for numbers, codes, measurements
+  
+  Scale:
+    display: 3.5rem / 700 / tracking -0.03em
+    h1: 2.25rem / 600 / tracking -0.02em
+    h2: 1.5rem / 600
+    h3: 1.125rem / 600
+    body: 0.9375rem / 400 / line-height 1.65
+    label: 0.75rem / 500 / tracking 0.02em
+    mono: 0.875rem / 400
+
+Layout Principles:
+  - Left-aligned content throughout. No centered hero text.
+  - Glassmorphism cards: background rgba(14,21,37,0.8), border 1px solid 
+    var(--border), backdrop-filter blur(12px)
+  - Border radius: 12px for cards, 8px for buttons, 6px for inputs, 
+    24px for pills/badges
+  - Spacing grid: 4px base unit. Use 8, 12, 16, 24, 32, 48, 64
+  - Max content width: 1280px, centered with auto margins
+  - Sidebar: 240px fixed, content area takes remaining width
+
+Motion Rules (restrained and purposeful):
+  - ONE signature animation: the scan-beam sweeping across uploaded images
+  - Step pipeline: sequential reveal with 200ms staggered delay per step
+  - Page transitions: 200ms opacity fade only
+  - Counters: animate from 0 to final value on mount (1.5s ease-out)
+  - NO scroll-triggered animations, NO hover float effects on cards
+  - Micro-interactions only: button press scale(0.97), input focus glow
+
+═══════════════════════════════════════════════════════════════
+TECH STACK
+═══════════════════════════════════════════════════════════════
+
+Frontend: React 18 + TypeScript + Vite
+Routing: React Router v6
+Styling: Tailwind CSS + CSS custom properties (no shadcn — write custom components)
+Animation: Framer Motion (used sparingly per motion rules above)
+Charts: Recharts
+AI: Anthropic Claude API — model: "claude-sonnet-4-6", max_tokens: 1500
+PDF: jsPDF + jspdf-autotable
+Icons: Lucide React
+Notifications: react-hot-toast
+
+═══════════════════════════════════════════════════════════════
+APP ARCHITECTURE — 6 Pages
+═══════════════════════════════════════════════════════════════
+
+Routes:
+  /            → Landing
+  /scan        → Scanner (3 tabs)
+  /processing  → Processing Animation
+  /results     → Compliance Results
+  /dashboard   → Enforcement Dashboard
+  /manufacturer → Manufacturer Portal
+
+Persistent elements:
+  - Top navbar: MetroScan AI logo (left) + nav links + "Officer Login" button (right)
+  - Navbar has thin saffron bottom border with glow
+  - No sidebar on landing/scan/processing/results
+  - Dashboard and manufacturer pages have left sidebar
+
+═══════════════════════════════════════════════════════════════
+PAGE 1: LANDING (/)
+═══════════════════════════════════════════════════════════════
+
+Layout: Two-column on desktop (text left, visual right), single column mobile.
+
+Left column content:
+  Eyebrow tag (pill style, saffron border): "Smart India Hackathon 2026 · PS #26034"
+  
+  Display headline (Space Grotesk 700, 3.5rem, text-primary):
+    "AI-Powered Label  
+     Compliance at
+     Government Scale."
+    Note: "Compliance" renders in saffron color, rest in white.
+  
+  Subheadline (DM Sans, 1.0625rem, text-secondary, max-width 520px):
+    "MetroScan AI checks every mandatory declaration under LM (PC) Rules, 
+     2011 in under 60 seconds — physical products, e-commerce listings, 
+     and manufacturer label designs."
+  
+  Live metrics strip (horizontal, small, monospaced numbers):
+    [10,000+] Products/officer/day
+    [94.5%] OCR Accuracy  
+    [< 60s] Per compliance check
+    [80+] Indian language support
+    Style: three metric blocks separated by thin vertical dividers, 
+    saffron numbers, gray labels. Animate counters from 0 on mount.
+  
+  CTA buttons (horizontal pair):
+    Primary: "Start Compliance Check" (saffron background, dark text, bold)
+    Secondary: "View Dashboard" (transparent, saffron border and text)
+  
+  Below buttons — small text: 
+    "Free for government enforcement officers · No data leaves NIC Cloud"
+
+Right column content:
+  A dark card (bg-elevated) showing a MOCK live scan in progress:
+    - Small product label image (use a placeholder biscuit/soap label image from 
+      picsum with a food product ID)
+    - Animated scan beam (CSS: a horizontal saffron-to-transparent gradient line, 
+      2px height, animating translateY from 0 to 100% in 2.5s, infinite loop)
+    - Below the image: 5 small status rows lighting up sequentially:
+      ✓ Preprocessing complete
+      ✓ Barcode detected — 4.2 mm/px
+      ✓ 12 fields extracted  
+      ⚠ Font size: 2.1mm (required: 3mm) ← pulsing amber
+      Processing semantic validation...  ← pulsing with dots animation
+    - Corner label: "LIVE SCAN" in small saffron pill with pulsing dot
+  
+  This right panel creates visual interest without being a generic floating screenshot.
+
+Bottom of landing — 3 track cards (full-width grid, 3 columns):
+  Card 1: Physical Product Scan
+    Icon: Camera (Lucide)
+    Description: "Point camera or upload photo of any packaged product. 
+    Barcode-as-Ruler technique measures real font sizes without a physical ruler."
+    Badge: "Field Use"
+    
+  Card 2: E-Commerce Monitor  
+    Icon: Globe (Lucide)
+    Description: "Paste Amazon or Flipkart product URL. Automated daily 
+    crawl checks Rule 6(10) compliance for 516+ violation cases like Maharashtra."
+    Badge: "Daily Crawl"
+    
+  Card 3: Manufacturer Pre-Print
+    Icon: FileCheck (Lucide)
+    Description: "Upload label design before printing. Get a compliance 
+    certificate instantly. Prevent violations at source."
+    Badge: "Pre-Production"
+  
+  Each card: bg-surface, border var(--border), left-aligned, icon in saffron. 
+  On hover: border-color changes to rgba(249,115,22,0.4), no float/lift effect.
+
+═══════════════════════════════════════════════════════════════
+PAGE 2: SCANNER (/scan)
+═══════════════════════════════════════════════════════════════
+
+Page header:
+  Breadcrumb: Home > Compliance Scanner
+  H1: "Compliance Scanner"
+  Subtitle: "Select scan mode and provide your input"
+
+Three tab buttons (pill style, horizontal):
+  [📷 Physical Scan] [🌐 E-Commerce URL] [🏭 Manufacturer Upload]
+  Active tab: saffron background, dark text. Inactive: transparent, gray text.
+
+━━━ TAB 1: Physical Scan ━━━
+
+Two-zone layout:
+  Left (60%): Upload Zone
+    Large dashed border zone (border: 2px dashed rgba(249,115,22,0.4))
+    Icon: UploadCloud (Lucide, 48px, saffron)
+    Primary text: "Drop product label image here"
+    Secondary text: ".JPG, .PNG, .WEBP up to 10MB"
+    Button: "Browse Files" (saffron outline)
+    
+    When image is loaded:
+      - Show thumbnail preview (object-contain, max 400px tall)
+      - THE SCAN BEAM animation runs once across the image
+      - Small chip overlay: "Image ready · 2.4 MB · 1280×960px"
+    
+  Right (40%): Scan Configuration panel (bg-surface card)
+    Title: "Scan Settings"
+    
+    Dropdown: "Rule Set Version"
+    Options: LM PC Rules 2011 (Base) | + 2015 Amendment | + 2017 Amendment (Recommended) | + 2021 Amendment
+    Default: 2017 Amendment
+    
+    Toggle row: "E-commerce label context" (off by default)
+    Toggle row: "Multi-language label" (on by default)
+    
+    Checkbox list: "Override checks (advanced)"
+    — □ Skip font size check
+    — □ Skip country of origin check  
+    — ☑ Include semantic validation (Mistral-7B)
+    
+    Large CTA at bottom: "Run Compliance Check →" 
+    (full-width, saffron background, Space Grotesk 600, 1.0625rem)
+    
+    Small text: "Est. processing time: 45–60 seconds"
+
+━━━ TAB 2: E-Commerce URL ━━━
+
+Centered form card (max-width 640px, mx-auto):
+  Label: "Product Listing URL"
+  Large input field (height 52px) with Globe icon inside left
+  Placeholder: "https://www.amazon.in/dp/... or flipkart.com/..."
+  
+  Below input — example chip buttons:
+    "Try: Amazon Example" | "Try: Flipkart Example" | "Try: Meesho Example"
+    Clicking populates the input with a mock URL
+  
+  Rule 6(10) callout box (amber tint):
+    ⚠ "Rule 6(10) mandates e-commerce platforms to display all declarations 
+    required under these rules. Non-compliance: up to ₹25,000 fine."
+  
+  "Crawl & Analyse" button (full-width, saffron)
+  
+  Below: stats chip row:
+    "516 e-commerce violations in Maharashtra 2024–25 · ₹11 Cr fines collected"
+
+━━━ TAB 3: Manufacturer Upload ━━━
+
+Two-column:
+  Left: Upload label artwork file (same dashed zone as Tab 1)
+    Extra note: "Accepts PNG, AI-exported PNG, PDF (first page scanned)"
+  
+  Right: Product details form
+    Fields: Product Name, FSSAI Number (optional), Target States (multi-select), 
+    Printing Batch Size
+    Dropdown: "Certificate required for" — Retailer / Distributor / Internal QA
+    
+    Submit: "Verify & Issue Certificate" (saffron)
+
+═══════════════════════════════════════════════════════════════
+PAGE 3: PROCESSING (/processing)
+═══════════════════════════════════════════════════════════════
+
+This page auto-navigates here after submitting scan. 
+On mount, immediately call Claude API and animate pipeline.
+After Claude responds, auto-navigate to /results.
+
+Layout: Centered, single column, max-width 720px.
+
+Top: Small product thumbnail (rounded, 80×80px) with "Analysing:" label
+
+Headline: "Compliance Check In Progress"
+Subtext: "Do not close this tab · Estimated: 45 seconds"
+
+Timer: Large monospaced counter "00:00" counting up from 00:00.
+Progress bar below (saffron fill, animating left to right, width tied to step completion).
+
+Pipeline Steps (vertical, connected by thin vertical line):
+Each step is a row: [Icon circle] — [Step name + description] — [Status badge]
+
+Step 1: Preprocessing
+  Icon: Settings2 (Lucide)
+  Name: "Image Preprocessing"
+  Desc: "CLAHE enhancement · Denoising · YOLOv11 label detection · Perspective correction"
+  Duration: auto-complete after 6s
+
+Step 2: Barcode Calibration
+  Icon: Barcode (Lucide)
+  Name: "Scale Calibration"
+  Desc: "EAN-13 barcode detected · Width: 312px → 25.9mm GS1 standard · mm/px ratio computed"
+  Duration: auto-complete after 12s
+
+Step 3: VLM Extraction
+  Icon: ScanText (Lucide)
+  Name: "Field Extraction — PaddleOCR-VL 1.5"
+  Desc: "Extracting all 12 mandatory declarations · Processing multi-script content"
+  Duration: auto-complete after 25s
+
+Step 4: Rule Engine Check
+  Icon: ClipboardCheck (Lucide)
+  Name: "Rule Engine — 12 Field Validation"
+  Desc: "Checking presence, format, and content against LM (PC) Rules 2011 + amendments"
+  Duration: auto-complete after 35s
+
+Step 5: Font Size Verification
+  Icon: Type (Lucide)
+  Name: "Font Measurement — Barcode-as-Ruler"
+  Desc: "BBox height in pixels × mm/px ratio → real-world font size vs LM thresholds"
+  Duration: auto-complete after 42s
+
+Step 6: Semantic Validation
+  Icon: Brain (Lucide)
+  Name: "Semantic Validation — Mistral-7B"
+  Desc: "Contextual check for misleading claims, ambiguous declarations, language compliance"
+  Duration: matches API response
+
+Step States:
+  Pending: circle border dashed gray, text text-secondary
+  Active: circle saffron solid with pulse animation, text white
+  Done: circle india-green solid with checkmark icon, text green
+
+Below pipeline, a rotating fact chip every 8s:
+  "EAN-13 barcodes have fixed GS1 dimensions: 25.9mm × 37.29mm worldwide"
+  "Rule 6 mandates MRP in ₹ with all taxes inclusive"
+  "Font height for MRP must be minimum 3mm on labels"
+  "PaddleOCR-VL 1.5 achieved 94.5% SOTA on OmniDocBench (Apr 2026)"
+
+═══════════════════════════════════════════════════════════════
+CLAUDE API INTEGRATION (implement exactly)
+═══════════════════════════════════════════════════════════════
+
+Call the Anthropic API from your frontend or a lightweight backend.
+Use this exact request structure:
+
+const response = await fetch("https://api.anthropic.com/v1/messages", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    model: "claude-sonnet-4-6",
+    max_tokens: 1500,
+    messages: [{
+      role: "user",
+      content: `You are MetroScan AI, an automated Legal Metrology compliance 
+      officer for India. A product label has been scanned.
+      
+      Product context: ${productName || "Unknown packaged commodity"}.
+      Upload type: ${uploadType} (physical/ecommerce/manufacturer).
+      
+      Simulate a realistic, detailed compliance check under Legal Metrology 
+      (Packaged Commodities) Rules 2011 + 2017 amendment for a typical 
+      Indian FMCG product. 
+      
+      Return ONLY a valid JSON object (no markdown, no preamble) with this 
+      exact structure:
+      {
+        "productName": "string — inferred product name",
+        "overallCompliant": boolean,
+        "complianceScore": number (0-100),
+        "violationCount": { "critical": number, "major": number, "minor": number },
+        "processingTimeMs": number (between 35000 and 58000),
+        "barcodeCalibration": {
+          "detected": true,
+          "pixelWidth": number (250-400),
+          "mmPerPx": number (0.06-0.12, 4 decimal places),
+          "confidence": number (85-99)
+        },
+        "fields": [
+          {
+            "id": "name_of_commodity",
+            "label": "Name of Commodity",
+            "ruleRef": "Rule 6(1)",
+            "status": "compliant" | "violation" | "warning",
+            "severity": "critical" | "major" | "minor" | null,
+            "found": "string — what was found on label",
+            "required": "string — what the rule requires",
+            "fontSizeMm": number or null,
+            "fontRequiredMm": number or null,
+            "notes": "string — officer observation"
+          }
+        ],
+        (include all 12 fields: name_of_commodity, net_quantity, mrp, 
+         date_of_manufacture, best_before, manufacturer_address, country_of_origin, 
+         customer_care, consumer_complaint_address, common_name, 
+         quantity_dimensions, fssai_number),
+        "semanticFlags": ["string — any contextual issues found"],
+        "officerRecommendation": "string — 2-3 sentence enforcement recommendation",
+        "certificateEligible": boolean
+      }
+      
+      Make it realistic: most products have 1-3 violations. Use specific, 
+      believable values (real font sizes, real addresses, real MRP formats). 
+      Vary severity across fields.`
+    }]
+  })
+});
+
+const data = await response.json();
+const result = JSON.parse(data.content[0].text);
+// Store in state/localStorage and navigate to /results
+
+If API call fails, use MOCK_DATA defined below.
+
+═══════════════════════════════════════════════════════════════
+PAGE 4: RESULTS (/results)
+═══════════════════════════════════════════════════════════════
+
+Layout: Two-column (40% left image panel, 60% right report panel) on desktop.
+On mobile: stacked, report first.
+
+━━━ LEFT PANEL: Image Analysis View ━━━
+
+Heading (small, text-secondary): "Scanned Label"
+
+Image display area (bg-elevated, rounded-12, overflow-hidden):
+  Show the uploaded image OR a placeholder food product image
+  
+  Overlay annotations (absolutely positioned rectangles):
+    For each violation field: show a semi-transparent red rectangle 
+    with a small numbered tag (1, 2, 3...) corresponding to violation cards
+    For compliant fields with detectable positions: show thin green outlines
+  
+  Below image:
+    "Barcode Calibration" chip: "EAN-13 · 4.18 mm/px · ±0.3% error"
+    Small note: "Annotations are illustrative. Precise bounding boxes 
+    generated by YOLOv11 label detection."
+
+Download/Share row:
+  "Download PDF Report" button (saffron, full-width in this panel)
+  "Send to Dashboard" button (outline)
+
+━━━ RIGHT PANEL: Compliance Report ━━━
+
+Top section — Verdict:
+
+  Left side:
+    Large verdict badge (full-width pill):
+      COMPLIANT ✓ → india-green background
+      NON-COMPLIANT ✗ → crimson background  
+      COMPLIANT WITH WARNINGS ⚠ → amber background
+    
+    Product name (h2, Space Grotesk)
+    Scan ID: "TKS-2026-XXXXXX" (monospaced, text-secondary)
+    Timestamp: current datetime
+    Rule set: "LM (PC) Rules 2011 + 2017 Amendment"
+
+  Right side (circular gauge):
+    Compliance Score: large number (JetBrains Mono, 3rem, colored by score)
+    Circular SVG progress ring (saffron → green gradient based on score)
+    Label: "Compliance Score"
+
+Violation Summary row (3 chips, horizontal):
+  🔴 Critical: N  🟠 Major: N  🟡 Minor: N
+  Each is a pill with count. If count > 0, show pulsing dot.
+
+Divider with "Rule 6 Field Analysis" label centered on it.
+
+Fields list (12 accordion cards):
+  Each card:
+    Header row (always visible, clickable to expand):
+      Left: Field number badge (1-12, small circle, bg-elevated)
+            Field name (DM Sans 500)
+      Middle: Status badge (COMPLIANT / VIOLATION / WARNING)
+      Right: Rule reference tag (e.g., "Rule 6(1)") + expand chevron
+    
+    Expanded body (smooth height animation):
+      Two-column grid:
+        "Found on label" (left): quoted value in a code-style box (bg-base)
+        "Required by rule" (right): requirement text
+      
+      If font size checked:
+        Font measurement row: 
+          "Measured: 2.1mm" [thin horizontal bar] "Required: ≥3mm"
+          Bar is red if below threshold, green if above
+      
+      Notes row (text-secondary, italic): officer notes from AI response
+      Severity indicator (far right of notes): "⚠ Major violation"
+
+Card background colors:
+  Violation cards: left border 3px solid crimson, bg slightly crimson-tinted
+  Warning cards: left border 3px solid amber
+  Compliant cards: left border 3px solid india-green
+
+Below fields:
+  "Semantic Validation Flags" section (if any):
+    Each flag as a small amber chip with text
+  
+  "Officer Recommendation" box:
+    bg-elevated, left border saffron 3px
+    AI-generated recommendation text
+    "AI-generated. Officer discretion applies."
+  
+  "Certificate Status" row:
+    If eligible: "Pre-Print Certificate: ELIGIBLE — Issue Now →" (green)
+    If not: "Not eligible for certificate — resolve Critical violations first"
+
+═══════════════════════════════════════════════════════════════
+PAGE 5: ENFORCEMENT DASHBOARD (/dashboard)
+═══════════════════════════════════════════════════════════════
+
+Left sidebar (240px, bg-surface, full-height, fixed):
+  Logo: MetroScan AI (small version)
+  Officer info: "Officer Rajesh Kumar · Pune District"
+  
+  Nav items (vertical, with Lucide icons):
+    LayoutDashboard — Overview (active)
+    ClipboardList — All Scans
+    AlertTriangle — Violations
+    Building2 — Manufacturers
+    Settings — Rule Engine
+    FileBarChart — Reports
+
+  Bottom of sidebar:
+    Small: "NIC Cloud · Secure · Offline capable"
+
+Main content area:
+  
+  Page header row:
+    H1: "Enforcement Overview"
+    Right: Date filter dropdown "Last 30 days" + "Export Report" button (outline)
+
+  Stats row (4 cards, grid-cols-4):
+    Card 1: Total Scans
+      Big number: 1,247 (animate from 0)
+      Trend: ↑ 23% from last month
+      Icon: ScanLine (saffron)
+    
+    Card 2: Violations Found
+      Big number: 342 (animate)
+      Trend: ↓ 8% (good direction, green arrow)
+      Icon: AlertTriangle (crimson)
+    
+    Card 3: Compliance Rate
+      Big number: 72.6% (animate)
+      Trend: ↑ 4.2% from last month
+      Icon: TrendingUp (india-green)
+    
+    Card 4: Pending Reviews
+      Big number: 18 (animate)
+      Trend: "Requires attention"
+      Icon: Clock (amber)
+    
+    Each card: bg-surface, glass border, icon floated right, 
+    number in JetBrains Mono, trend in small text.
+
+  Charts row (2 charts side by side):
+    
+    Chart 1 (60% width): "Violations by Field Category" — Horizontal bar chart
+      Categories: MRP (68) | Net Quantity (54) | Mfr Address (48) | Font Size (42) | 
+                  Expiry Date (38) | Country of Origin (31) | Customer Care (28) | 
+                  Others (33)
+      Bar color: saffron gradient fading to saffron-dim
+      Axis text: DM Sans, text-secondary
+    
+    Chart 2 (40% width): "Scan Distribution by Track" — Donut chart
+      Physical: 58% (saffron)
+      E-Commerce: 28% (india-green)  
+      Manufacturer: 14% (amber)
+      Center of donut: "1,247\nTotal" in JetBrains Mono
+    
+    Both charts in bg-surface glass cards.
+
+  Second charts row:
+    Full-width line chart: "Daily Scan Volume — Last 30 Days"
+    Two lines: "Total Scans" (saffron) and "Violations Found" (crimson)
+    X-axis: dates. Y-axis: count.
+    Generate 30 days of mock data with realistic values (total 30-70/day, 
+    violations 8-22/day, with weekday peaks).
+
+  Recent Scans table (full-width):
+    Title: "Recent Compliance Checks"
+    Filter pills: All | Critical | Major | Minor | Compliant
+    
+    Columns: Scan ID | Product | Track | Officer | Time | Score | Violations | Status | Action
+    
+    10 mock rows:
+      Row 1: TKS-26-0847 | Parle-G Biscuits 150g | Physical | Rajesh K | 2 min ago | 91% | 0 Crit, 0 Maj, 1 Min | COMPLIANT | View
+      Row 2: TKS-26-0846 | Maggi Masala Noodles | E-Commerce | System | 8 min ago | 64% | 0 Crit, 2 Maj, 1 Min | WARNING | View
+      Row 3: TKS-26-0845 | Generic Handwash 250ml | Physical | Priya S | 15 min ago | 38% | 1 Crit, 3 Maj, 2 Min | VIOLATION | View
+      (add 7 more rows with variety)
+    
+    Status badges: same color coding as before (green/amber/crimson pills)
+    "View" action: outline button that goes to /results
+    
+    Table: alternating row colors (bg-surface / bg-elevated), 
+    sticky header, sortable columns with up/down arrows.
+
+═══════════════════════════════════════════════════════════════
+PAGE 6: MANUFACTURER PORTAL (/manufacturer)
+═══════════════════════════════════════════════════════════════
+
+Same sidebar as dashboard.
+
+Two-column layout: left upload form, right certificate preview.
+
+Left: "Label Pre-Print Compliance Check"
+  Step 1: Company registration form
+    GSTIN: input (validated format XX-XXXXXXXXXXXXXXX)
+    Company Name: input
+    Product Name: input
+    Net Quantity: input + unit dropdown (g/ml/pcs)
+    FSSAI Lic: input (optional)
+  
+  Step 2: Upload label image (same upload zone as scanner)
+  
+  Step 3: "Generate Compliance Certificate" button (saffron, large)
+  
+  Processing: shows condensed 3-step pipeline (no separate page, inline)
+
+Right: Certificate Preview card (bg-surface, styled like a formal document)
+  
+  When not yet generated: faded placeholder with "Certificate will appear here"
+  
+  When generated (COMPLIANT result):
+    GOVERNMENT OF INDIA header (saffron + green)
+    "Department of Consumer Affairs"
+    "Legal Metrology Division"
+    
+    Certificate of Pre-Print Compliance
+    
+    This is to certify that the label design submitted by
+    [COMPANY NAME] for the product [PRODUCT NAME] has been
+    verified and found COMPLIANT with Legal Metrology
+    (Packaged Commodities) Rules, 2011 including 2017 Amendment.
+    
+    Certificate No: MSLM-2026-XXXXXXXX
+    Valid for: 90 days from date of issue
+    Issue Date: [current date]
+    
+    Verified by: MetroScan AI v2.1.0 · PaddleOCR-VL 1.5
+    
+    QR Code placeholder (generated with a library): links to certificate URL
+    
+    "Download Certificate (PDF)" button — generates actual PDF with jsPDF
+  
+  When NOT COMPLIANT:
+    Shows violation list instead, no certificate.
+    "Resolve all Critical and Major violations to obtain certificate."
+
+═══════════════════════════════════════════════════════════════
+MOCK DATA (use when API fails or for initial dashboard)
+═══════════════════════════════════════════════════════════════
+
+export const MOCK_SCAN_RESULT = {
+  productName: "Parle-G Glucose Biscuits 200g",
+  overallCompliant: false,
+  complianceScore: 74,
+  violationCount: { critical: 0, major: 1, minor: 2 },
+  processingTimeMs: 47382,
+  barcodeCalibration: {
+    detected: true,
+    pixelWidth: 312,
+    mmPerPx: 0.0830,
+    confidence: 97.2
+  },
+  fields: [
+    {
+      id: "name_of_commodity",
+      label: "Name of Commodity",
+      ruleRef: "Rule 6(1)",
+      status: "compliant",
+      severity: null,
+      found: "PARLE-G GLUCOSE BISCUITS",
+      required: "Common or generic name of commodity",
+      fontSizeMm: 8.4,
+      fontRequiredMm: 3.0,
+      notes: "Clearly legible. Font size 8.4mm exceeds minimum threshold."
+    },
+    {
+      id: "net_quantity",
+      label: "Net Quantity",
+      ruleRef: "Rule 6(2)",
+      status: "compliant",
+      severity: null,
+      found: "NET WT. 200g",
+      required: "Net quantity in standard unit (metric)",
+      fontSizeMm: 4.2,
+      fontRequiredMm: 3.0,
+      notes: "Correct unit. Font size compliant."
+    },
+    {
+      id: "mrp",
+      label: "Maximum Retail Price (MRP)",
+      ruleRef: "Rule 6(3) + 2017 Amendment",
+      status: "violation",
+      severity: "major",
+      found: "MRP Rs.20/- (Incl. of all taxes)",
+      required: "MRP in ₹ symbol, font size ≥ 3mm, inclusive of all taxes stated",
+      fontSizeMm: 2.1,
+      fontRequiredMm: 3.0,
+      notes: "MRP declaration text found but font height 2.1mm is below the 3mm minimum requirement under 2017 amendment. Rs. symbol used instead of ₹ — acceptable but ₹ preferred."
+    },
+    {
+      id: "date_of_manufacture",
+      label: "Month & Year of Manufacture",
+      ruleRef: "Rule 6(4)",
+      status: "compliant",
+      severity: null,
+      found: "MFG: JUN 2026",
+      required: "Month and year of manufacture",
+      fontSizeMm: 3.2,
+      fontRequiredMm: null,
+      notes: "Present and legible. Format acceptable."
+    },
+    {
+      id: "best_before",
+      label: "Best Before / Expiry Date",
+      ruleRef: "Rule 6(5)",
+      status: "compliant",
+      severity: null,
+      found: "BEST BEFORE: 12 MONTHS FROM MFG",
+      required: "Best before or expiry date clearly stated",
+      fontSizeMm: 2.9,
+      fontRequiredMm: null,
+      notes: "Relative date format used (12 months from MFG). Compliant."
+    },
+    {
+      id: "manufacturer_address",
+      label: "Manufacturer Name & Address",
+      ruleRef: "Rule 6(6)",
+      status: "warning",
+      severity: "minor",
+      found: "Parle Products Pvt. Ltd., Mumbai",
+      required: "Complete address including city, state, PIN code",
+      fontSizeMm: 1.8,
+      fontRequiredMm: null,
+      notes: "Address is incomplete — PIN code and state missing. Font size 1.8mm is below threshold for address text."
+    },
+    {
+      id: "country_of_origin",
+      label: "Country of Origin",
+      ruleRef: "Rule 6(7)",
+      status: "warning",
+      severity: "minor",
+      found: "Not explicitly found",
+      required: "Country of origin for imported goods (if applicable)",
+      fontSizeMm: null,
+      fontRequiredMm: null,
+      notes: "Product appears to be manufactured in India. Domestic products must state 'Country of Origin: India' as per 2021 amendment for clarity."
+    },
+    {
+      id: "customer_care",
+      label: "Customer Care Details",
+      ruleRef: "Rule 6(8)",
+      status: "compliant",
+      severity: null,
+      found: "Consumer Helpline: 1800-XXX-XXXX",
+      required: "Customer care number or email",
+      fontSizeMm: 1.9,
+      fontRequiredMm: null,
+      notes: "Helpline number present. Compliant."
+    },
+    {
+      id: "consumer_complaint_address",
+      label: "Consumer Complaint Address",
+      ruleRef: "Rule 6(9)",
+      status: "compliant",
+      severity: null,
+      found: "Consumer Complaint: Write to Parle Products Pvt. Ltd., Mumbai 400 025",
+      required: "Address where consumer complaints should be directed",
+      fontSizeMm: null,
+      fontRequiredMm: null,
+      notes: "Complaint address present and readable."
+    },
+    {
+      id: "common_name",
+      label: "Common/Generic Name",
+      ruleRef: "Rule 6(1) — Common Name",
+      status: "compliant",
+      severity: null,
+      found: "BISCUITS — GLUCOSE TYPE",
+      required: "Generic/common name of commodity in addition to brand name",
+      fontSizeMm: 5.1,
+      fontRequiredMm: null,
+      notes: "Generic name clearly stated. Compliant."
+    },
+    {
+      id: "quantity_dimensions",
+      label: "Quantity in Dimensions (if applicable)",
+      ruleRef: "Rule 6(2)(ii)",
+      status: "compliant",
+      severity: null,
+      found: "N/A — Weight-based commodity",
+      required: "Required only for dimensional commodities (length×width×height)",
+      fontSizeMm: null,
+      fontRequiredMm: null,
+      notes: "Not applicable for weight-based product. Compliant by inapplicability."
+    },
+    {
+      id: "fssai_number",
+      label: "FSSAI License Number",
+      ruleRef: "Food Safety and Standards Act 2006",
+      status: "compliant",
+      severity: null,
+      found: "FSSAI Lic. No. 10013022002806",
+      required: "14-digit FSSAI license number for food products",
+      fontSizeMm: 1.7,
+      fontRequiredMm: null,
+      notes: "FSSAI number found and format validated (14 digits). Compliant."
+    }
+  ],
+  semanticFlags: [
+    "MRP font below mandatory 3mm threshold — likely enforcement action required",
+    "Manufacturer address incomplete — request full address with PIN code"
+  ],
+  officerRecommendation: "Issue formal Notice of Violation for MRP font size non-compliance (Major — Rule 6(3) + 2017 Amendment). Request manufacturer to provide complete address with PIN code within 15 days. Product may continue sale pending rectification of Minor violations on next print run.",
+  certificateEligible: false
+};
+
+═══════════════════════════════════════════════════════════════
+KEY COMPONENTS TO IMPLEMENT
+═══════════════════════════════════════════════════════════════
+
+1. ScanBeam
+   A 2px horizontal line (background: linear-gradient(90deg, 
+   transparent, #F97316, #F97316, transparent)) that animates 
+   translateY from 0% to 100% in 2.5s, then resets. Run once 
+   after image upload. Position: absolute, width: 100%, 
+   box-shadow: 0 0 12px rgba(249,115,22,0.6).
+
+2. PipelineStep (reusable)
+   Props: stepNumber, title, description, state (pending/active/done)
+   Pending: gray circle outline
+   Active: saffron circle + radial pulse animation (keyframes: 
+   scale 1→1.4, opacity 1→0, repeat 1.5s)
+   Done: india-green circle with Check icon
+
+3. ComplianceScore (SVG circle gauge)
+   SVG with two circles: track circle (stroke: --border) and 
+   progress circle (stroke-dashoffset animated from circumference 
+   to (1-score/100)*circumference). Score number inside in 
+   JetBrains Mono. Color: green if >80, amber if 50-80, crimson if <50.
+
+4. AnimatedCounter
+   useEffect with requestAnimationFrame counting from 0 to target 
+   over 1500ms with easeOut curve. Renders in JetBrains Mono.
+
+5. FieldAccordion (12 of these on results page)
+   Smooth height animation using Framer Motion AnimatePresence 
+   or CSS grid rows (grid-template-rows: 0fr → 1fr).
+   Do not animate opacity — animate height only.
+
+6. StatusBadge
+   Props: status (compliant/violation/warning/pending)
+   Styles: small pill, 6px border-radius, uppercase text 0.7rem 600
+   compliant → india-green bg, "COMPLIANT ✓"
+   violation → crimson bg, "VIOLATION ✗"
+   warning → amber bg, "WARNING ⚠"
+
+7. PDFReportGenerator
+   On click "Download PDF Report", use jsPDF to generate:
+   - Page 1: MetroScan AI header, product info, verdict, score, violation summary
+   - Page 2: Table of all 12 fields with status and notes
+   - Page 3: Officer recommendation, certification status, scan metadata
+   Save as: "MetroScan_Report_[ProductName]_[Date].pdf"
+
+═══════════════════════════════════════════════════════════════
+RESPONSIVE BEHAVIOR
+═══════════════════════════════════════════════════════════════
+
+Breakpoints (Tailwind defaults):
+  sm: 640px, md: 768px, lg: 1024px, xl: 1280px
+
+Mobile adaptations:
+  - Landing: stacked, hero image card comes after text
+  - Scanner: tabs scroll horizontally, panels stack vertically
+  - Processing: same (single column, works well)
+  - Results: report panel first, image panel second
+  - Dashboard: sidebar collapses to hamburger menu, 
+    stats grid goes 2×2, charts stack vertically
+  - Manufacturer: form and certificate stack vertically
+
+═══════════════════════════════════════════════════════════════
+DEMO FLOW (make this work seamlessly for judges)
+═══════════════════════════════════════════════════════════════
+
+On Landing page, add a floating "DEMO MODE" chip (bottom right corner):
+  Clicking it opens a small modal:
+  "Select a demo product to see MetroScan AI in action"
+  
+  Three demo product buttons:
+  [Parle-G Biscuits] — shows mock non-critical violations
+  [Maggi Noodles 70g] — shows e-commerce tab, major violations
+  [Generic Handwash] — shows critical violations, non-compliant
+  
+  Clicking any button auto-populates the scanner, runs through 
+  processing (uses mock data so it works without API), and shows 
+  the pre-defined result. This ensures a flawless judge demo even 
+  if there's no internet.
+
+═══════════════════════════════════════════════════════════════
+SMALL DETAILS THAT ELEVATE THE UI
+═══════════════════════════════════════════════════════════════
+
+- Navbar: on scroll past 50px, add backdrop-blur and slight dark bg
+- All inputs: on focus, show 0 0 0 2px rgba(249,115,22,0.3) outline
+- Empty states: never show a blank area — show illustration + helpful text
+- Scan ID format: "TKS-26-" + 4 random digits, monospaced
+- Loading skeleton: use animated gradient sweep (shimmer effect) 
+  in bg-elevated color on bg-surface
+- "Powered by PaddleOCR-VL 1.5 · Mistral-7B · YOLOv11" 
+  small text in footer of results page
+- Government badge in footer: "Made for Government of India · 
+  Ministry of Consumer Affairs, Food & Public Distribution"
+- Toast notifications: use react-hot-toast with dark theme matching 
+  the design system (bg-elevated, border var(--border))
+- Tab title: "MetroScan AI — Legal Metrology Compliance System"
+- Favicon: use a simple scan/barcode icon in saffron
+
+═══════════════════════════════════════════════════════════════
+DO NOT DO THESE
+═══════════════════════════════════════════════════════════════
+
+✗ Do not use shadcn/ui — build all components from scratch with Tailwind
+✗ Do not use light mode anywhere — dark only
+✗ Do not use warm cream backgrounds or terracotta accents
+✗ Do not animate every card on hover (float/lift effects)
+✗ Do not use ALL CAPS eyebrow labels above every heading
+✗ Do not add "→" arrows to every link and button text
+✗ Do not use a warm-gray near-black (#111) — use the deep navy #070B14
+✗ Do not center all text — left-aligned throughout
+✗ Do not use skeleton screens everywhere — only on async data loads
+✗ Do not show any placeholder text like "Lorem ipsum" anywhere
+
+═══════════════════════════════════════════════════════════════
+FINAL NOTE
+═══════════════════════════════════════════════════════════════
+
+This is a Smart India Hackathon demonstration. The UI should look 
+like something the Ministry of Consumer Affairs would actually deploy 
+— authoritative, precise, and trustworthy — while also being modern 
+enough to impress technical judges. Every screen should be fully 
+populated with realistic data on load. The demo flow must work 
+end-to-end without any broken states.
+
+Team Takshak · SIH 2026 · Problem Statement #26034
