@@ -1,0 +1,15 @@
+# Environment variables
+.env
+.env.local
+metroscan-ai/.env
+metroscan-ai/.env.local
+
+# Dependencies
+node_modules/
+metroscan-ai/node_modules/
+
+# Builds
+dist/
+metroscan-ai/dist/
+*.log
+.DS_Store
