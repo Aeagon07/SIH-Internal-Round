@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, ShieldX, Download, Building2, ChevronRight, ArrowLeft, ShieldCheck, UserCheck } from 'lucide-react';
+import { CheckCircle, Download, Building2, ChevronRight, ArrowLeft, ShieldCheck } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import UploadZone from '@/components/ui/UploadZone';
 import PipelineStep from '@/components/ui/PipelineStep';
@@ -281,7 +281,7 @@ export default function Manufacturer() {
                       ].map(row => (
                         <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 8, alignItems: 'flex-start' }}>
                           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>{row.label}:</span>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--navy-dark)', fontFamily: 'JetBrains Mono', fontWeight: 700, textAlign: 'right' }}>{row.value}</span>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--navy-dark)', fontWeight: 700, textAlign: 'right' }}>{row.value}</span>
                         </div>
                       ))}
                     </div>

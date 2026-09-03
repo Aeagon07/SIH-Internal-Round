@@ -144,7 +144,7 @@ export default function Processing() {
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 2 }}>
                 Analysing Label Image
               </div>
-              <div style={{ fontWeight: 700, color: 'var(--navy-dark)', fontFamily: 'Space Grotesk', fontSize: '1.2rem' }}>
+              <div style={{ fontWeight: 700, color: 'var(--navy-dark)', fontFamily: 'Outfit', fontSize: '1.2rem' }}>
                 {scanInput?.productName || 'Packaged Commodity'}
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 2 }}>
@@ -164,8 +164,8 @@ export default function Processing() {
           display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 12,
         }}>
           <span style={{
-            fontFamily: 'JetBrains Mono', fontSize: '2.5rem', fontWeight: 700,
-            color: 'var(--saffron)', lineHeight: 1, letterSpacing: '0.02em',
+            fontFamily: 'Outfit', fontSize: '2.5rem', fontWeight: 800,
+            color: 'var(--saffron)', lineHeight: 1, letterSpacing: '-0.02em',
           }}>
             {mins}:{secs}
           </span>
@@ -208,7 +208,7 @@ export default function Processing() {
               background: '#FFFFFF', border: '1px solid var(--border)',
               borderRadius: 12, padding: '14px 18px',
               fontSize: '0.8125rem', color: 'var(--text-secondary)',
-              fontFamily: 'JetBrains Mono', fontWeight: 500,
+              fontWeight: 500,
               boxShadow: 'var(--shadow-sm)',
             }}
           >

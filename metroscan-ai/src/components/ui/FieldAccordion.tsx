@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, CheckCircle2, AlertTriangle, XCircle, Rule } from 'lucide-react';
+import { ChevronDown, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 import { FieldCheck } from '@/types/compliance';
 
 interface FieldAccordionProps {
@@ -13,7 +13,6 @@ export default function FieldAccordion({ field, index }: FieldAccordionProps) {
 
   const isPass = field.status === 'compliant';
   const isViol = field.status === 'violation';
-  const isWarn = field.status === 'warning';
 
   const statusColor = isPass ? 'var(--india-green)' : isViol ? 'var(--crimson)' : 'var(--amber)';
   const statusBg = isPass ? 'var(--india-green-bg)' : isViol ? 'var(--crimson-bg)' : 'var(--amber-bg)';
@@ -57,7 +56,7 @@ export default function FieldAccordion({ field, index }: FieldAccordionProps) {
             <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--navy-dark)', fontFamily: 'Outfit' }}>
               {field.label}
             </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono', marginTop: 1 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, marginTop: 1 }}>
               {field.ruleRef}
             </div>
           </div>
@@ -100,7 +99,7 @@ export default function FieldAccordion({ field, index }: FieldAccordionProps) {
                 <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>
                   Extracted OCR Text
                 </div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--navy-dark)', fontFamily: 'JetBrains Mono' }}>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--navy-dark)' }}>
                   {field.found || 'Not Detected'}
                 </div>
               </div>
@@ -121,7 +120,7 @@ export default function FieldAccordion({ field, index }: FieldAccordionProps) {
               <div style={{ background: '#FFFFFF', padding: '12px 14px', borderRadius: 8, border: '1px solid var(--border)', marginBottom: 14 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, marginBottom: 6 }}>
                   <span>Font Height Measurement</span>
-                  <span style={{ fontFamily: 'JetBrains Mono', color: field.fontSizeMm >= field.fontRequiredMm ? 'var(--india-green)' : 'var(--crimson)' }}>
+                  <span style={{ fontWeight: 700, color: field.fontSizeMm >= field.fontRequiredMm ? 'var(--india-green)' : 'var(--crimson)' }}>
                     {field.fontSizeMm}mm measured / {field.fontRequiredMm}mm required
                   </span>
                 </div>

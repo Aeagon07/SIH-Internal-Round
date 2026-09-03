@@ -132,7 +132,7 @@ export default function Sidebar({
                   <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--navy-dark)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                     {officerName}
                   </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono', fontWeight: 600 }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                     Badge: {badgeId}
                   </div>
                 </div>

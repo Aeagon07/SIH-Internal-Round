@@ -31,7 +31,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     }}>
       <div style={{ color: 'var(--navy-dark)', fontWeight: 700, marginBottom: 4 }}>{label}</div>
       {payload.map((p: any) => (
-        <div key={p.name} style={{ color: p.color, fontFamily: 'JetBrains Mono', fontWeight: 600 }}>
+        <div key={p.name} style={{ color: p.color, fontWeight: 600 }}>
           {p.name}: {p.value}
         </div>
       ))}
@@ -170,7 +170,7 @@ export default function Dashboard() {
                       <Icon size={18} color={card.color} />
                     </div>
                   </div>
-                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '1.85rem', fontWeight: 700, color: 'var(--navy-dark)', lineHeight: 1, marginBottom: 8 }}>
+                  <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--navy-dark)', lineHeight: 1, marginBottom: 8, fontFamily: 'Outfit' }}>
                     <AnimatedCounter target={card.value} suffix={card.unit || ''} />
                   </div>
                   <div style={{ fontSize: '0.78rem', fontWeight: 600, color: card.trendUp ? 'var(--india-green)' : 'var(--crimson)' }}>
@@ -233,7 +233,7 @@ export default function Dashboard() {
                   position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
                   textAlign: 'center', pointerEvents: 'none',
                 }}>
-                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '1.35rem', fontWeight: 700, color: 'var(--navy-dark)', lineHeight: 1 }}>1,247</div>
+                  <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--navy-dark)', lineHeight: 1, fontFamily: 'Outfit' }}>1,247</div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600 }}>Total Audits</div>
                 </div>
               </div>
@@ -244,7 +244,7 @@ export default function Dashboard() {
                       <div style={{ width: 10, height: 10, borderRadius: '50%', background: d.color }} />
                       <span style={{ fontSize: '0.8125rem', color: 'var(--navy-dark)', fontWeight: 600 }}>{d.name}</span>
                     </div>
-                    <span style={{ fontFamily: 'JetBrains Mono', fontSize: '0.8125rem', color: 'var(--navy-dark)', fontWeight: 700 }}>{d.value}%</span>
+                    <span style={{ fontSize: '0.8125rem', color: 'var(--navy-dark)', fontWeight: 700 }}>{d.value}%</span>
                   </div>
                 ))}
               </div>
@@ -317,20 +317,20 @@ export default function Dashboard() {
                 <tbody>
                   {filteredScans.map(scan => (
                     <tr key={scan.id}>
-                      <td style={{ fontFamily: 'JetBrains Mono', fontSize: '0.8125rem', color: 'var(--saffron)', fontWeight: 700 }}>{scan.id}</td>
+                      <td style={{ fontSize: '0.85rem', color: 'var(--saffron)', fontWeight: 700 }}>{scan.id}</td>
                       <td style={{ fontWeight: 600, color: 'var(--navy-dark)' }}>{scan.product}</td>
                       <td style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>{scan.track}</td>
                       <td style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{scan.officer}</td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontFamily: 'JetBrains Mono' }}>{scan.time}</td>
+                      <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 500 }}>{scan.time}</td>
                       <td>
                         <span style={{
-                          fontFamily: 'JetBrains Mono', fontSize: '0.9rem', fontWeight: 700,
+                          fontSize: '0.9rem', fontWeight: 700,
                           color: scan.score >= 80 ? 'var(--india-green)' : scan.score >= 50 ? 'var(--amber)' : 'var(--crimson)',
                         }}>
                           {scan.score}%
                         </span>
                       </td>
-                      <td style={{ fontSize: '0.8125rem', fontFamily: 'JetBrains Mono', whiteSpace: 'nowrap' }}>
+                      <td style={{ fontSize: '0.8125rem', whiteSpace: 'nowrap' }}>
                         <span style={{ color: 'var(--crimson)', fontWeight: 700 }}>{scan.violations.critical} Critical</span>{' '}
                         <span style={{ color: 'var(--amber)', fontWeight: 700 }}>{scan.violations.major} Major</span>
                       </td>

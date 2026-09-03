@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Download, Send, ShieldCheck, ShieldAlert, ArrowLeft, Target, Scale, FileText, CheckCircle2 } from 'lucide-react';
 import { useScanContext } from '@/hooks/useScanContext';
 import { DEMO_PRODUCTS_MAP, PARLE_G_DEMO, BoundingBox } from '@/data/mockData';
@@ -32,7 +32,6 @@ export default function Results() {
 
   const isCompliant = result.overallCompliant;
   const hasCritical = result.violationCount.critical > 0;
-  const hasMajor = result.violationCount.major > 0;
 
   return (
     <div style={{ background: 'var(--bg-base)', minHeight: '100vh', paddingTop: 64 }}>
@@ -46,8 +45,8 @@ export default function Results() {
           >
             <ArrowLeft size={16} /> Perform New Label Inspection
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono', fontWeight: 600 }}>
-            <span>Case Ref: <strong style={{ color: 'var(--saffron)' }}>{scanId}</strong></span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+            <span>Case Ref: <strong style={{ color: 'var(--saffron)', fontWeight: 700 }}>{scanId}</strong></span>
             <span>·</span>
             <span>Audited: {now}</span>
           </div>
@@ -205,15 +204,15 @@ export default function Results() {
               <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 background: '#F8FAFC', padding: '10px 14px', borderRadius: 8,
-                border: '1px solid var(--border)', fontSize: '0.78rem', fontFamily: 'JetBrains Mono',
+                border: '1px solid var(--border)', fontSize: '0.8125rem', fontWeight: 600,
               }}>
                 <div>
                   <span style={{ color: 'var(--text-muted)' }}>Ratio: </span>
-                  <strong style={{ color: 'var(--saffron)' }}>{result.barcodeCalibration.mmPerPx.toFixed(4)} mm/px</strong>
+                  <strong style={{ color: 'var(--saffron)', fontWeight: 700 }}>{result.barcodeCalibration.mmPerPx.toFixed(4)} mm/px</strong>
                 </div>
                 <div>
                   <span style={{ color: 'var(--text-muted)' }}>Accuracy: </span>
-                  <strong style={{ color: 'var(--india-green)' }}>{result.barcodeCalibration.confidence}% GS1 Match</strong>
+                  <strong style={{ color: 'var(--india-green)', fontWeight: 700 }}>{result.barcodeCalibration.confidence}% GS1 Match</strong>
                 </div>
               </div>
             </div>
@@ -273,7 +272,7 @@ export default function Results() {
                   background: v.bg, border: `1px solid ${v.border}`,
                   boxShadow: 'var(--shadow-sm)',
                 }}>
-                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '1.5rem', fontWeight: 800, color: v.color, lineHeight: 1 }}>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: v.color, lineHeight: 1 }}>
                     {v.count}
                   </div>
                   <div style={{ fontSize: '0.78rem', color: 'var(--navy-dark)', fontWeight: 700, marginTop: 4 }}>{v.label}</div>
@@ -286,7 +285,7 @@ export default function Results() {
               <h3 className="text-h3" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FileText size={18} color="var(--saffron)" /> Rule 6 Field Declarations Audit
               </h3>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 700, fontFamily: 'JetBrains Mono' }}>
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 700 }}>
                 12 Declarations Scanned
               </span>
             </div>
